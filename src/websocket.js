@@ -10,15 +10,15 @@ exports.setupWebsocket = (server, connection) => {
     try {
       const posts = await connection("posts").orderBy("publishedAt", "desc");
 
-      const formattedPosts = posts.map((row) => ({
-        id: row.id,
+      const formattedPosts = posts.map((post) => ({
+        id: post.id,
         author: {
-          avatarUrl: row.avatarUrl,
-          name: row.authorName,
-          role: row.authorRole,
+          avatarUrl: post.avatarUrl,
+          name: post.authorName,
+          role: post.authorRole,
         },
-        content: JSON.parse(row.content),
-        publishedAt: new Date(row.publishedAt),
+        content: JSON.parse(post.content),
+        publishedAt: new Date(post.publishedAt),
       }));
 
       socket.emit("listaPosts", formattedPosts);
