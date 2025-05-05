@@ -1,6 +1,9 @@
-exports.setupWebsocket = (server, connection) => {
-  const { Server } = require("socket.io");
-  const io = new Server(server, {
+const { Server } = require("socket.io");
+
+let io;
+
+function setupWebsocket(server, db) {
+  io = new Server(server, {
     cors: { origin: "*" },
   });
 
@@ -8,7 +11,7 @@ exports.setupWebsocket = (server, connection) => {
     console.log(`Cliente conectado: ${socket.id}`);
 
     try {
-      const posts = await connection("posts").orderBy("publishedAt", "desc");
+      const posts = await db("posts").orderBy("publishedAt", "desc");
 
       const formattedPosts = posts.map((post) => ({
         id: post.id,
@@ -30,4 +33,12 @@ exports.setupWebsocket = (server, connection) => {
       console.log(`Cliente desconectado: ${socket.id}`);
     });
   });
-};
+}
+
+function sendMessage(event, data) {
+  if (io) {
+    io.emit(event, data);
+  }
+}
+
+module.exports = { setupWebsocket, sendMessage };

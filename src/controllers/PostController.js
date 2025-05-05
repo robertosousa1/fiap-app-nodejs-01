@@ -1,5 +1,6 @@
 const connection = require("../database/connection");
 const { postSchema } = require("../validators/postValidator");
+const { sendMessage } = require("../websocket");
 
 const index = async (req, res) => {
   const posts = await connection("posts").orderBy("publishedAt", "desc");
@@ -57,6 +58,8 @@ const create = async (req, res) => {
   });
 
   const postCreated = { id: createdId, author, content, publishedAt };
+
+  sendMessage("novoPost", postCreated);
   return res.status(201).json(postCreated);
 };
 
